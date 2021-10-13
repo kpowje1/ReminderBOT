@@ -7,9 +7,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 
+#Данный бот - попытка сделать напоминания в телеге, где вы задаёте текст, который вам придёт через заданное время.
 # uid = os.environ["TELEGRAM_USER_ID"]
-bot = telebot.TeleBot("1762482874:AAFfImdG6drqsIvTk9yjxkqU4DQAaxsDOj8") #текущий бот на серве
-# bot = telebot.TeleBot("640915895:AAGY8gCN628_OV6W9fWj2f5VVvGqSziVE6Q")#бот для тестов
+bot = telebot.TeleBot("") #текущий бот на серве
 bot.remove_webhook()
 def isint(value): #проверка на целое число
     if type(value) != str:
@@ -34,7 +34,7 @@ def second_step(message):  # будем спрашивать через скок
     # здесь в message.text хранится то что он хочет напомнить
     if message.text == 'Отмена':
         kb1 = types.ReplyKeyboardRemove(selective=False)
-        bot.reply_to(message, 'ГАЛЯ, Отмена!', reply_markup=kb1)
+        bot.reply_to(message, 'Действие отменено', reply_markup=kb1)
     else:  # тут нам нужно задать второй вопрос про время.
         msg = bot.reply_to(message, f'Через какое время произвести напоминание, укажите'
                                     f'в минутах?')
@@ -44,7 +44,7 @@ def third_step(message, txt):  # будем спрашивать через ск
     # здесь в message.text хранятся часы
     if message.text == 'Отмена': #это тестовый вариант, ниже корректный
      kb1 = types.ReplyKeyboardRemove(selective=False)
-     bot.reply_to(message, 'ГАЛЯ, Отмена!', reply_markup=kb1)
+     bot.reply_to(message, 'Действие отменено', reply_markup=kb1)
     elif isint(message.text): # тут нам нужно задать второй вопрос про время.
         msg = bot.reply_to(message, f'Через какое время произвести напоминание, укажите'
                                     f'в часах?')
@@ -57,7 +57,7 @@ def fourth_step(message, minutes, txt):  # будем спрашивать че�
     # здесь в message.text хранятся минуты
     if message.text == 'Отмена':
         kb1 = types.ReplyKeyboardRemove(selective=False)
-        bot.reply_to(message, 'ГАЛЯ, Отмена!', reply_markup=kb1)
+        bot.reply_to(message, 'Действие отменено', reply_markup=kb1)
     elif isint(message.text):  # тут нам нужно задать второй вопрос про время.
         msg = bot.reply_to(message, f'Через какое время произвести напоминание, укажите'
                                     f'в днях?')
@@ -70,7 +70,7 @@ def email_step(message, minutes, hour, txt):  # будем спрашивать 
     # здесь в message.text хранятся дни
     if message.text == 'Отмена':
         kb1 = types.ReplyKeyboardRemove(selective=False)
-        bot.reply_to(message, 'ГАЛЯ, Отмена!', reply_markup=kb1)
+        bot.reply_to(message, 'Действие отменено', reply_markup=kb1)
     elif isint(message.text):  # тут нам нужно задать второй вопрос про время.
         msg = bot.reply_to(message, f'Куда отправить?')
         bot.register_next_step_handler(msg, send_message, hour, message.text, minutes, txt)  # тут переджаём дни
@@ -95,7 +95,7 @@ def send_message(message, hour, days, minutes, txt):
         t = 3
     if type(txt) != str: #проверяем пользователь отправил нам текст или что-то другое
         print(type(txt), 'v smisle')
-        txt = "Ну вот нечего было не текст пихать, не будет твоего напоминания"
+        txt = "Ну вот нечего было что-то кроме текста пихать, не будет твоего напоминания"
         bot.reply_to(message, txt, reply_markup=kb1)
     else:
         bot.reply_to(message, f'Хорошо, {message.from_user.first_name}, до напоминания: {rem}',
@@ -104,13 +104,13 @@ def send_message(message, hour, days, minutes, txt):
         bot.reply_to(message, f'Напоминаю, {txt}')
         send_email(txt, email) #пробуем отправить письмо
 
-def send_email(txt, email):
+def send_email(txt, email): # метод отправки напоминания также через почту.
     try:
         msg = MIMEMultipart()
 
         # setup the parameters of the message
-        password = "guzyoqyhdhytfccq"
-        msg['From'] = "johndaebot@yandex.ru"
+        password = "" #здесь указывается пароль для подключения
+        msg['From'] = "" #Здесь указываем почту
         msg['To'] = email
         msg['Date'] = time.strftime('%A, %d %b %Y %H:%M:%S')
         msg['Subject'] = "Reminder"
